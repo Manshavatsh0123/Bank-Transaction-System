@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const userModels = require("../models/user.model");
+const emailService = require("../services/email.services");
 
 // Register Controller
 async function userRegisterController(req, res) {
@@ -28,11 +29,13 @@ async function userRegisterController(req, res) {
         );
 
         res.cookie("token", token, {
-            httpOnly: true,
-            // maxAge: 3 * 24 * 60 * 60 * 1000 // 3 days
+            httpOnly: true
         });
 
-        res.status(201).json({
+        // Send email first
+        await emailService.sendRegisterEmail(user.email, user.name);
+
+        return res.status(201).json({
             user: {
                 _id: user._id,
                 email: user.email,
@@ -42,7 +45,7 @@ async function userRegisterController(req, res) {
         });
 
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             message: error.message,
             status: "failed"
         });
@@ -99,4 +102,4 @@ async function userloginController(req, res) {
     }
 }
 
-module.exports = { userRegisterController , userloginController };
+module.exports = { userRegisterController, userloginController };
