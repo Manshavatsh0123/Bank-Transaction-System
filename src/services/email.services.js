@@ -248,4 +248,160 @@ body {
     await sendEmail(userEmail, subject, "", html);
 }
 
-module.exports = { sendRegisterEmail };
+async function sendTransactionEmail(userEmail, name, amount, toAccount) {
+
+    const subject = "Transaction Successful";
+
+    const html = `
+<!DOCTYPE html>
+<html>
+
+<head>
+<style>
+
+body{
+    margin:0;
+    padding:0;
+    background:#f3f4f6;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.container{
+    max-width:600px;
+    margin:40px auto;
+    background:#ffffff;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.header{
+    background:linear-gradient(135deg,#16a34a,#22c55e);
+    color:#fff;
+    text-align:center;
+    padding:35px;
+}
+
+.header h1{
+    margin:0;
+    font-size:28px;
+}
+
+.content{
+    padding:35px;
+    color:#374151;
+}
+
+.content h2{
+    margin-top:0;
+    color:#111827;
+}
+
+.details{
+    background:#f9fafb;
+    border:1px solid #e5e7eb;
+    border-radius:10px;
+    padding:20px;
+    margin:25px 0;
+}
+
+.details table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.details td{
+    padding:10px 0;
+    border-bottom:1px solid #e5e7eb;
+}
+
+.details tr:last-child td{
+    border-bottom:none;
+}
+
+.amount{
+    color:#16a34a;
+    font-size:28px;
+    font-weight:bold;
+}
+
+.footer{
+    background:#111827;
+    color:#9ca3af;
+    text-align:center;
+    padding:20px;
+    font-size:13px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Transaction Successful</h1>
+        <p>Your transfer has been completed successfully.</p>
+    </div>
+
+    <div class="content">
+
+        <h2>Hello ${name},</h2>
+
+        <p>
+            We are writing to inform you that your recent transaction has been processed successfully.
+        </p>
+
+        <div class="details">
+
+            <table>
+
+                <tr>
+                    <td><strong>Transferred Amount</strong></td>
+                    <td class="amount">₹${amount}</td>
+                </tr>
+
+                <tr>
+                    <td><strong>Transferred To</strong></td>
+                    <td>${toAccount}</td>
+                </tr>
+
+                <tr>
+                    <td><strong>Status</strong></td>
+                    <td style="color:#16a34a;font-weight:bold;">Completed</td>
+                </tr>
+
+            </table>
+
+        </div>
+
+        <p>
+            If you did not authorize this transaction, please contact our support team immediately.
+        </p>
+
+        <p>
+            Thank you for choosing <strong>Backend Ledger</strong>.
+        </p>
+
+        <p>
+            Regards,<br>
+            <strong>Backend Ledger Team</strong>
+        </p>
+
+    </div>
+
+    <div class="footer">
+        © 2026 Backend Ledger. All rights reserved.
+    </div>
+
+</div>
+
+</body>
+</html>
+`;
+
+    await sendEmail(userEmail, subject, "", html);
+}
+
+module.exports = { sendRegisterEmail, sendTransactionEmail };
