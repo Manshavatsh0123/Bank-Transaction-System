@@ -120,18 +120,61 @@ async function createTransaction(req, res) {
         // ============================
         // 7. Start Database Transaction
         // ============================
-        session.startTransaction();
+        await session.startTransaction();
 
-        const [transaction] = await transactionModel.create(
-            [{
-                fromAccount,
-                toAccount,
-                amount,
-                idempotencyKey,
-                status: "PENDING"
-            }],
-            { session }
-        );
+        let transaction;
+
+        try {
+            // Create transaction
+            [transaction] = await transactionModel.create(
+                [
+                    {
+                        fromAccount,
+                        toAccount,
+                        amount,
+                        idempotencyKey,
+                        status: "PENDING",
+                    },
+                ],
+                {
+                    session,
+                    ordered: true,
+                }
+            );
+
+            // Create ledger entries
+            await ledgerModel.insertMany(
+                [
+                    {
+                        account: fromAccount,
+                        amount,
+                        transaction: transaction._id,
+                        type: "DEBIT",
+                    },
+                    {
+                        account: toAccount,
+                        amount,
+                        transaction: transaction._id,
+                        type: "CREDIT",
+                    },
+                ],
+                { session }
+            );
+
+            // Update transaction status
+            transaction.status = "COMPLETED";
+            await transaction.save({ session });
+
+            // Commit
+            await session.commitTransaction();
+
+        } catch (err) {
+            if (session.inTransaction()) {
+                await session.abortTransaction();
+            }
+
+            throw err;
+        }
 
         // ============================
         // 8. Create Ledger Entries
@@ -187,13 +230,16 @@ async function createTransaction(req, res) {
 
     } catch (error) {
 
-        await session.abortTransaction();
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
+
+        console.error("Transaction Error:", error);
 
         return res.status(500).json({
             success: false,
-            message: error.message
+            message: error.message,
         });
-
     } finally {
 
         session.endSession();
