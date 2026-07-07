@@ -286,8 +286,8 @@ B.Tech (Electronics and Communication Engineering)
 
 Backend Developer
 
-GitHub: https://github.com/yourusername
+GitHub: https://github.com/Manshavatsh0123
 
-LinkedIn: https://linkedin.com/in/yourprofile
+LinkedIn: https://www.linkedin.com/in/mansha-vatsh88/
 
-Portfolio: https://yourportfolio.com
+Portfolio: https://manshavatsh90.netlify.app/
