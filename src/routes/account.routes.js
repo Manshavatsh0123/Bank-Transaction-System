@@ -9,7 +9,13 @@ const router = express.Router();
  * -Create a new accounts
  * -Protected Routes
  */
-router.post("/",authMiddleware.authMiddleware,accountController.createAccountController)
+router.post("/", authMiddleware.authMiddleware, accountController.createAccountController)
 
+/**
+ * - GET /api/accounts/
+ * Get all accounts of the logged-in users
+ * Protected Routes
+ */
+router.get("/", authMiddleware.authMiddleware, accountController.getUserAccountController)
 
 module.exports = router;

@@ -30,6 +30,26 @@ async function createAccountController(req, res) {
     }
 }
 
+async function getUserAccountController(req, res) {
+    try {
+        const accounts = await accountModel.find({
+            user: req.user._id,
+        });
+
+        return res.status(200).json({
+            success: true,
+            accounts,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch user accounts",
+            error: error.message,
+        });
+    }
+}
+
 module.exports = {
     createAccountController,
+    getUserAccountController
 };
