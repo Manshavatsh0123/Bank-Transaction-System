@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/user.model");
+const blacklistModel = require("../models/blackList.models");
 
 /**
  * Authentication Middleware
@@ -16,6 +17,14 @@ async function authMiddleware(req, res, next) {
     }
 
     try {
+        const blacklistedToken = await blacklistModel.findOne({ token });
+
+        if (blacklistedToken) {
+            return res.status(401).json({
+                message: "Token has been blacklisted. Please login again.",
+            });
+        }
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         const user = await userModel.findById(decoded.userId);
@@ -50,6 +59,14 @@ async function systemMiddleware(req, res, next) {
     }
 
     try {
+        const blacklistedToken = await blacklistModel.findOne({ token });
+
+        if (blacklistedToken) {
+            return res.status(401).json({
+                message: "Token has been blacklisted. Please login again.",
+            });
+        }
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         const user = await userModel
