@@ -49,7 +49,40 @@ async function getUserAccountController(req, res) {
     }
 }
 
+async function getAccountBalanceController(req, res) {
+    try {
+        const { accountId } = req.params;
+
+        const account = await accountModel.findOne({
+            _id: accountId,
+            user: req.user._id,
+        });
+
+        if (!account) {
+            return res.status(404).json({
+                message: "Account not found!",
+            });
+        }
+
+        const balance = await account.getBalance();
+
+        return res.status(200).json({
+            success: true,
+            accountId: account._id,
+            balance,
+            currency: account.currency,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch account balance",
+            error: error.message,
+        });
+    }
+}
+
 module.exports = {
     createAccountController,
-    getUserAccountController
+    getUserAccountController,
+    getAccountBalanceController
 };
